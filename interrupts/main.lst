@@ -1,0 +1,139 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	__vector_2
+  12               	__vector_2:
+  13               	.LFB0:
+  14               		.file 1 "main.c"
+   1:main.c        **** #include <avr/interrupt.h>
+   2:main.c        ****  
+   3:main.c        **** // Der Code des externen Interrupts
+   4:main.c        **** ISR(INT1_vect)
+   5:main.c        **** {
+  15               		.loc 1 5 1 view -0
+  16               		.cfi_startproc
+  17 0000 8F93 8FB7 		__gcc_isr 1
+  17      8F93 
+  18 0006 9F93      		push r25
+  19               	.LCFI0:
+  20               		.cfi_def_cfa_offset 3
+  21               		.cfi_offset 25, -2
+  22               	/* prologue: Signal */
+  23               	/* frame size = 0 */
+  24               	/* stack size = 1...5 */
+  25               	.L__stack_usage = 1 + __gcc_isr.n_pushed
+   6:main.c        **** 	// mache irgendetwas
+   7:main.c        **** 	cli();
+  26               		.loc 1 7 2 view .LVU1
+  27               	/* #APP */
+  28               	 ;  7 "main.c" 1
+  29 0008 F894      		cli
+  30               	 ;  0 "" 2
+   8:main.c        **** 	PORTB ^= (1 << PIN0);
+  31               		.loc 1 8 2 view .LVU2
+  32               		.loc 1 8 8 is_stmt 0 view .LVU3
+  33               	/* #NOAPP */
+  34 000a 85B1      		in r24,0x5
+  35 000c 91E0      		ldi r25,lo8(1)
+  36 000e 8927      		eor r24,r25
+  37 0010 85B9      		out 0x5,r24
+   9:main.c        **** 	sei();
+  38               		.loc 1 9 2 is_stmt 1 view .LVU4
+  39               	/* #APP */
+  40               	 ;  9 "main.c" 1
+  41 0012 7894      		sei
+  42               	 ;  0 "" 2
+  43               	/* #NOAPP */
+  44               	/* epilogue start */
+  10:main.c        **** }
+  45               		.loc 1 10 1 is_stmt 0 view .LVU5
+  46 0014 9F91      		pop r25
+  47 0016 8F91 8FBF 		__gcc_isr 2
+  47      8F91 
+  48 001c 1895      		reti
+  49               		__gcc_isr 0,r24
+  50               		.cfi_endproc
+  51               	.LFE0:
+  53               		.section	.text.startup,"ax",@progbits
+  54               	.global	main
+  56               	main:
+  57               	.LFB1:
+  11:main.c        ****  
+  12:main.c        **** int main()
+  13:main.c        **** {
+  58               		.loc 1 13 1 is_stmt 1 view -0
+  59               		.cfi_startproc
+  60               	/* prologue: function */
+  61               	/* frame size = 0 */
+  62               	/* stack size = 0 */
+  63               	.L__stack_usage = 0
+  14:main.c        **** 	// Ändere Pin 7 an Bus E zu einem Inputpin, indem Bit 7 auf 0 gesetzt wird
+  15:main.c        **** 	DDRD &= ~(1 << PIN3);
+  64               		.loc 1 15 2 view .LVU7
+  65               		.loc 1 15 7 is_stmt 0 view .LVU8
+  66 0000 5398      		cbi 0xa,3
+  16:main.c        ****  
+  17:main.c        **** 	DDRB = (1 << PIN0);
+  67               		.loc 1 17 2 is_stmt 1 view .LVU9
+  68               		.loc 1 17 7 is_stmt 0 view .LVU10
+  69 0002 81E0      		ldi r24,lo8(1)
+  70 0004 84B9      		out 0x4,r24
+  18:main.c        **** 	// Definiere einen Pull-Up Widerstand für Pin 7 an Bus E 
+  19:main.c        ****         // um Input Floating zu verhindern.
+  20:main.c        **** 	PORTD |= (1 << PIN3);
+  71               		.loc 1 20 2 is_stmt 1 view .LVU11
+  72               		.loc 1 20 8 is_stmt 0 view .LVU12
+  73 0006 5B9A      		sbi 0xb,3
+  21:main.c        ****  
+  22:main.c        **** 	// Setzt den Interruptmodus auf “Logische Änderung” für den Interrupt 7
+  23:main.c        ****         // im externen Interruptkonfigurationsregister.
+  24:main.c        **** 	EICRA = (1 << ISC11);
+  74               		.loc 1 24 2 is_stmt 1 view .LVU13
+  75               		.loc 1 24 8 is_stmt 0 view .LVU14
+  76 0008 88E0      		ldi r24,lo8(8)
+  77 000a 8093 6900 		sts 105,r24
+  25:main.c        ****  
+  26:main.c        **** 	// Erlaube externen Interrupt 7
+  27:main.c        **** 	EIMSK |= (1 << INT1);
+  78               		.loc 1 27 2 is_stmt 1 view .LVU15
+  79               		.loc 1 27 8 is_stmt 0 view .LVU16
+  80 000e E99A      		sbi 0x1d,1
+  28:main.c        ****  
+  29:main.c        **** 	// Erlaube globale Interrupts
+  30:main.c        **** 	sei();
+  81               		.loc 1 30 2 is_stmt 1 view .LVU17
+  82               	/* #APP */
+  83               	 ;  30 "main.c" 1
+  84 0010 7894      		sei
+  85               	 ;  0 "" 2
+  86               	/* #NOAPP */
+  87               	.L3:
+  31:main.c        ****  
+  32:main.c        **** 	// Endlosschleife
+  33:main.c        **** 	while (1) continue;
+  88               		.loc 1 33 2 view .LVU18
+  89               		.loc 1 33 12 view .LVU19
+  90 0012 00C0      		rjmp .L3
+  91               		.cfi_endproc
+  92               	.LFE1:
+  94               		.text
+  95               	.Letext0:
+  96               		.file 2 "/usr/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccpjwYss.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccpjwYss.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccpjwYss.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccpjwYss.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccpjwYss.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccpjwYss.s:12     .text:0000000000000000 __vector_2
+                            *ABS*:0000000000000002 __gcc_isr.n_pushed.001
+     /tmp/ccpjwYss.s:56     .text.startup:0000000000000000 main
+
+NO UNDEFINED SYMBOLS

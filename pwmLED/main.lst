@@ -1,0 +1,258 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	timer0_init
+  12               	timer0_init:
+  13               	.LFB0:
+  14               		.file 1 "main.c"
+   1:main.c        **** #include <avr/io.h>
+   2:main.c        **** #include <avr/interrupt.h>
+   3:main.c        ****  
+   4:main.c        **** void timer0_init()
+   5:main.c        **** {
+  15               		.loc 1 5 1 view -0
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+   6:main.c        ****    // Set on match from top, clear on match from below
+   7:main.c        ****    TCCR0A  = ((1 << COM0A1) | (1 << WGM00) | (1 << COM0B1) | (1 << COM0B0));
+  21               		.loc 1 7 4 view .LVU1
+  22               		.loc 1 7 12 is_stmt 0 view .LVU2
+  23 0000 81EB      		ldi r24,lo8(-79)
+  24 0002 84BD      		out 0x24,r24
+   8:main.c        ****    TCCR1A = ((1 << COM1A1) | (1 << COM1A0) | (1 << WGM10));
+  25               		.loc 1 8 4 is_stmt 1 view .LVU3
+  26               		.loc 1 8 11 is_stmt 0 view .LVU4
+  27 0004 81EC      		ldi r24,lo8(-63)
+  28 0006 8093 8000 		sts 128,r24
+   9:main.c        **** 
+  10:main.c        ****    // prescaler
+  11:main.c        ****    TCCR1B = (1 << CS10);
+  29               		.loc 1 11 4 is_stmt 1 view .LVU5
+  30               		.loc 1 11 11 is_stmt 0 view .LVU6
+  31 000a 81E0      		ldi r24,lo8(1)
+  32 000c 8093 8100 		sts 129,r24
+  12:main.c        ****    TCCR0B  = (1 << CS00);
+  33               		.loc 1 12 4 is_stmt 1 view .LVU7
+  34               		.loc 1 12 12 is_stmt 0 view .LVU8
+  35 0010 85BD      		out 0x25,r24
+  36               	/* epilogue start */
+  13:main.c        **** }
+  37               		.loc 1 13 1 view .LVU9
+  38 0012 0895      		ret
+  39               		.cfi_endproc
+  40               	.LFE0:
+  42               	.global	adc_init
+  44               	adc_init:
+  45               	.LFB1:
+  14:main.c        ****  
+  15:main.c        **** void adc_init()
+  16:main.c        **** {
+  46               		.loc 1 16 1 is_stmt 1 view -0
+  47               		.cfi_startproc
+  48               	/* prologue: function */
+  49               	/* frame size = 0 */
+  50               	/* stack size = 0 */
+  51               	.L__stack_usage = 0
+  17:main.c        ****     // AREF = AVcc
+  18:main.c        ****     ADMUX = (1<<REFS0);
+  52               		.loc 1 18 5 view .LVU11
+  53               		.loc 1 18 11 is_stmt 0 view .LVU12
+  54 0014 80E4      		ldi r24,lo8(64)
+  55 0016 8093 7C00 		sts 124,r24
+  19:main.c        ****  
+  20:main.c        ****     // ADC Enable and prescaler of 128
+  21:main.c        ****     // 16000000/128 = 125000
+  22:main.c        ****     ADCSRA = (1<<ADEN)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
+  56               		.loc 1 22 5 is_stmt 1 view .LVU13
+  57               		.loc 1 22 12 is_stmt 0 view .LVU14
+  58 001a 87E8      		ldi r24,lo8(-121)
+  59 001c 8093 7A00 		sts 122,r24
+  60               	/* epilogue start */
+  23:main.c        **** }
+  61               		.loc 1 23 1 view .LVU15
+  62 0020 0895      		ret
+  63               		.cfi_endproc
+  64               	.LFE1:
+  66               	.global	adc_read
+  68               	adc_read:
+  69               	.LVL0:
+  70               	.LFB2:
+  24:main.c        **** 
+  25:main.c        **** 
+  26:main.c        **** // read adc value
+  27:main.c        **** uint16_t adc_read(uint8_t ch)
+  28:main.c        **** {
+  71               		.loc 1 28 1 is_stmt 1 view -0
+  72               		.cfi_startproc
+  73               	/* prologue: function */
+  74               	/* frame size = 0 */
+  75               	/* stack size = 0 */
+  76               	.L__stack_usage = 0
+  29:main.c        ****     // select the corresponding channel 0~7
+  30:main.c        ****     // ANDing with '7' will always keep the value
+  31:main.c        ****     // of 'ch' between 0 and 7
+  32:main.c        ****     ch &= 0b00000111;  // AND operation with 7
+  77               		.loc 1 32 5 view .LVU17
+  33:main.c        ****     ADMUX = (ADMUX & 0xF8)|ch;     // clears the bottom 3 bits before ORing
+  78               		.loc 1 33 5 view .LVU18
+  79               		.loc 1 33 14 is_stmt 0 view .LVU19
+  80 0022 9091 7C00 		lds r25,124
+  81               		.loc 1 33 20 view .LVU20
+  82 0026 987F      		andi r25,lo8(-8)
+  32:main.c        ****     ADMUX = (ADMUX & 0xF8)|ch;     // clears the bottom 3 bits before ORing
+  83               		.loc 1 32 8 view .LVU21
+  84 0028 8770      		andi r24,lo8(7)
+  85               	.LVL1:
+  86               		.loc 1 33 27 view .LVU22
+  87 002a 982B      		or r25,r24
+  88               		.loc 1 33 11 view .LVU23
+  89 002c 9093 7C00 		sts 124,r25
+  34:main.c        ****  
+  35:main.c        ****     // start single conversion
+  36:main.c        ****     // write '1' to ADSC
+  37:main.c        ****     ADCSRA |= (1<<ADSC);
+  90               		.loc 1 37 5 is_stmt 1 view .LVU24
+  91               		.loc 1 37 12 is_stmt 0 view .LVU25
+  92 0030 8091 7A00 		lds r24,122
+  93               	.LVL2:
+  94               		.loc 1 37 12 view .LVU26
+  95 0034 8064      		ori r24,lo8(64)
+  96 0036 8093 7A00 		sts 122,r24
+  38:main.c        ****  
+  39:main.c        ****     // wait for conversion to complete
+  40:main.c        ****     // ADSC becomes '0' again
+  41:main.c        ****     // till then, run loop continuously
+  42:main.c        ****     while(ADCSRA & (1<<ADSC));
+  97               		.loc 1 42 5 is_stmt 1 view .LVU27
+  98               	.L4:
+  99               		.loc 1 42 30 discriminator 1 view .LVU28
+ 100               		.loc 1 42 11 is_stmt 0 discriminator 1 view .LVU29
+ 101 003a 8091 7A00 		lds r24,122
+ 102               		.loc 1 42 10 discriminator 1 view .LVU30
+ 103 003e 86FD      		sbrc r24,6
+ 104 0040 00C0      		rjmp .L4
+  43:main.c        ****  
+  44:main.c        ****     return (ADC);
+ 105               		.loc 1 44 5 is_stmt 1 view .LVU31
+ 106               		.loc 1 44 13 is_stmt 0 view .LVU32
+ 107 0042 8091 7800 		lds r24,120
+ 108 0046 9091 7900 		lds r25,120+1
+ 109               	/* epilogue start */
+  45:main.c        **** }
+ 110               		.loc 1 45 1 view .LVU33
+ 111 004a 0895      		ret
+ 112               		.cfi_endproc
+ 113               	.LFE2:
+ 115               		.section	.text.startup,"ax",@progbits
+ 116               	.global	main
+ 118               	main:
+ 119               	.LFB3:
+  46:main.c        **** 
+  47:main.c        **** int main(void)
+  48:main.c        **** {
+ 120               		.loc 1 48 1 is_stmt 1 view -0
+ 121               		.cfi_startproc
+ 122               	/* prologue: function */
+ 123               	/* frame size = 0 */
+ 124               	/* stack size = 0 */
+ 125               	.L__stack_usage = 0
+  49:main.c        **** 	sei();
+ 126               		.loc 1 49 2 view .LVU35
+ 127               	/* #APP */
+ 128               	 ;  49 "main.c" 1
+ 129 0000 7894      		sei
+ 130               	 ;  0 "" 2
+  50:main.c        ****     adc_init();
+ 131               		.loc 1 50 5 view .LVU36
+ 132               	/* #NOAPP */
+ 133 0002 0E94 0000 		call adc_init
+ 134               	.LVL3:
+  51:main.c        ****     // connect led to pin PC0
+  52:main.c        ****     DDRD |= ((1 << 6) | (1 << 5));
+ 135               		.loc 1 52 5 view .LVU37
+ 136               		.loc 1 52 10 is_stmt 0 view .LVU38
+ 137 0006 8AB1      		in r24,0xa
+ 138 0008 8066      		ori r24,lo8(96)
+ 139 000a 8AB9      		out 0xa,r24
+  53:main.c        ****     DDRB |= (1 << 1);
+ 140               		.loc 1 53 5 is_stmt 1 view .LVU39
+ 141               		.loc 1 53 10 is_stmt 0 view .LVU40
+ 142 000c 219A      		sbi 0x4,1
+  54:main.c        ****  
+  55:main.c        ****     // initialize timer
+  56:main.c        ****     timer0_init();
+ 143               		.loc 1 56 5 is_stmt 1 view .LVU41
+ 144 000e 0E94 0000 		call timer0_init
+ 145               	.LVL4:
+ 146               	.L7:
+  57:main.c        ****     uint8_t value;
+ 147               		.loc 1 57 5 discriminator 1 view .LVU42
+  58:main.c        ****     // loop forever
+  59:main.c        ****     while(1){
+ 148               		.loc 1 59 5 discriminator 1 view .LVU43
+  60:main.c        ****     //set pwm to poti value
+  61:main.c        ****     value = adc_read(0)/4;
+ 149               		.loc 1 61 5 discriminator 1 view .LVU44
+ 150               		.loc 1 61 13 is_stmt 0 discriminator 1 view .LVU45
+ 151 0012 80E0      		ldi r24,0
+ 152 0014 0E94 0000 		call adc_read
+ 153               	.LVL5:
+ 154               		.loc 1 61 24 discriminator 1 view .LVU46
+ 155 0018 EC01      		movw r28,r24
+ 156 001a D695      		lsr r29
+ 157 001c C795      		ror r28
+ 158 001e D695      		lsr r29
+ 159 0020 C795      		ror r28
+ 160               	.LVL6:
+  62:main.c        ****     OCR1A = value;
+ 161               		.loc 1 62 5 is_stmt 1 discriminator 1 view .LVU47
+ 162 0022 CE01      		movw r24,r28
+ 163 0024 9927      		clr r25
+ 164               		.loc 1 62 11 is_stmt 0 discriminator 1 view .LVU48
+ 165 0026 9093 8900 		sts 136+1,r25
+ 166 002a 8093 8800 		sts 136,r24
+  63:main.c        ****     OCR0B = adc_read(1)/4;
+ 167               		.loc 1 63 5 is_stmt 1 discriminator 1 view .LVU49
+ 168               		.loc 1 63 13 is_stmt 0 discriminator 1 view .LVU50
+ 169 002e 81E0      		ldi r24,lo8(1)
+ 170 0030 0E94 0000 		call adc_read
+ 171               	.LVL7:
+ 172               		.loc 1 63 24 discriminator 1 view .LVU51
+ 173 0034 9695      		lsr r25
+ 174 0036 8795      		ror r24
+ 175 0038 9695      		lsr r25
+ 176 003a 8795      		ror r24
+ 177               		.loc 1 63 11 discriminator 1 view .LVU52
+ 178 003c 88BD      		out 0x28,r24
+  64:main.c        ****     OCR0A = value; 
+ 179               		.loc 1 64 5 is_stmt 1 discriminator 1 view .LVU53
+ 180               		.loc 1 64 11 is_stmt 0 discriminator 1 view .LVU54
+ 181 003e C7BD      		out 0x27,r28
+ 182 0040 00C0      		rjmp .L7
+ 183               		.cfi_endproc
+ 184               	.LFE3:
+ 186               		.text
+ 187               	.Letext0:
+ 188               		.file 2 "/usr/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccWKQ7Zx.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccWKQ7Zx.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccWKQ7Zx.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccWKQ7Zx.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccWKQ7Zx.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccWKQ7Zx.s:12     .text:0000000000000000 timer0_init
+     /tmp/ccWKQ7Zx.s:44     .text:0000000000000014 adc_init
+     /tmp/ccWKQ7Zx.s:68     .text:0000000000000022 adc_read
+     /tmp/ccWKQ7Zx.s:118    .text.startup:0000000000000000 main
+
+NO UNDEFINED SYMBOLS
